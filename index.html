@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro Information Technology Services (MITS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              // Add any custom colors here
+            }
+          }
+        }
+      }
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css">
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      .sticky-banner {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      .slider {
+        scroll-behavior: smooth;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .progress-bar {
+        background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+      }
+      
+      /* Animation Classes */
+      .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.8s ease forwards;
+      }
+      
+      .slide-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUp 0.8s ease forwards;
+      }
+      
+      .scale-in {
+        opacity: 0;
+        transform: scale(0.95);
+        animation: scaleIn 0.8s ease forwards;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      .page-transition {
+        animation: pageTransition 0.5s ease;
+      }
+      
+      @keyframes pageTransition {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      
+      /* Project card animations */
+      .project-card {
+        transition: all 0.3s ease;
+      }
+      
+      .project-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .filter-button {
+        transition: all 0.3s ease;
+      }
+      
+      .filter-button.active {
+        background-color: #2563eb;
+        color: white;
+      }
+      
+      /* Loading animation */
+      .loading-spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3498db;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script>
+      // Page Navigation
+      function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.page-section').forEach(section => {
+          section.classList.add('hidden');
+        });
+        
+        // Show selected section with animation
+        const selectedSection = document.getElementById(sectionId);
+        if (selectedSection) {
+          selectedSection.classList.remove('hidden');
+          selectedSection.classList.add('page-transition');
+          
+          // Update active nav link
+          document.querySelectorAll('nav a').forEach(link => {
+            const href = link.getAttribute('href').substring(1); // Remove the # from href
+            if (href === sectionId) {
+              link.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            } else {
+              link.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            }
+          });
+          
+          // Scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+
+      // Project Filtering
+      function filterProjects(level) {
+        const projects = document.querySelectorAll('.project-card');
+        
+        projects.forEach(project => {
+          if (level === 'all' || project.dataset.level === level) {
+            project.style.display = 'block';
+            project.classList.add('scale-in');
+          } else {
+            project.style.display = 'none';
+          }
+        });
+        
+        // Update active filter button
+        document.querySelectorAll('.filter-button').forEach(button => {
+          if (button.dataset.level === level) {
+            button.classList.add('active');
+          } else {
+            button.classList.remove('active');
+          }
+        });
+      }
+
+      // Initialize animations on scroll
+      document.addEventListener('DOMContentLoaded', function() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('fade-in');
+            }
+          });
+        });
+
+        document.querySelectorAll('.animate-on-scroll').forEach((element) => {
+          observer.observe(element);
+        });
+
+        // Get the hash from URL or default to 'home'
+        const initialSection = window.location.hash.substring(1) || 'home';
+        showSection(initialSection);
+      });
+    </script>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Sticky Internship Banner -->
+    <div class="fixed bottom-4 right-4 z-50">
+      <a
+        href="https://forms.gle/bxeaipVNM1xSsLzv5"
+        target="_blank"
+        class="bg-blue-600 text-white px-3 py-1 text-sm rounded-lg shadow-lg hover:bg-blue-700 transition-colors flex items-center"
+      >
+        <i class="fas fa-briefcase mr-1"></i>Internship
+      </a>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div
+      id="sidebar"
+      class="sidebar fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 shadow-lg z-50 md:hidden transform -translate-x-full transition-transform duration-300 ease-in-out"
+    >
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Menu</h3>
+          <button
+            onclick="toggleSidebar()"
+            class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <nav class="space-y-4">
+          <a
+            href="#home"
+            onclick="showSection('home'); toggleSidebar();"
+            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-home mr-3"></i>Home
+          </a>
+          <a
+            href="#tutorials"
+            onclick="showSection('tutorials'); toggleSidebar();"
+            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-book mr-3"></i>Tutorials
+          </a>
+          <a
+            href="#projects"
+            onclick="showSection('projects'); toggleSidebar();"
+            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-code mr-3"></i>Projects
+          </a>
+          <a
+            href="#about"
+            onclick="showSection('about'); toggleSidebar();"
+            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-info-circle mr-3"></i>About
+          </a>
+          <a
+            href="#contact"
+            onclick="showSection('contact'); toggleSidebar();"
+            class="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-envelope mr-3"></i>Contact
+          </a>
+          <hr class="my-4 border-gray-200 dark:border-gray-700" />
+          <a
+            href="#internship"
+            onclick="showSection('internship'); toggleSidebar();"
+            class="block py-2 text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-500 transition-colors"
+          >
+            <i class="fas fa-briefcase mr-3"></i>Internship Application
+          </a>
+          
+          <!-- Dark Mode Toggle for Mobile -->
+          <button
+            onclick="toggleDarkMode()"
+            class="w-full flex items-center py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            <i class="fas fa-moon mr-3 dark:hidden"></i>
+            <i class="fas fa-sun mr-3 hidden dark:block"></i>
+            <span class="dark:hidden">Dark Mode</span>
+            <span class="hidden dark:block">Light Mode</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div
+      id="sidebar-overlay"
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"
+      onclick="toggleSidebar()"
+    ></div>
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 transition-colors duration-200">
+      <nav class="container mx-auto px-4 py-2">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-2">
+            <div class="w-12 h-12 overflow-hidden rounded-lg">
+              <img src="Logo.jpg" alt="MITS Logo" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <h1 class="text-lg font-bold text-gray-800 dark:text-white">Micro</h1>
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                Information Technology Services
+              </p>
+            </div>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center space-x-6">
+            <a
+              href="#home"
+              onclick="showSection('home')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >Home</a
+            >
+            <a
+              href="#tutorials"
+              onclick="showSection('tutorials')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >Tutorials</a
+            >
+            <a
+              href="#projects"
+              onclick="showSection('projects')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >Projects</a
+            >
+            <a
+              href="#internship"
+              onclick="showSection('internship')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >Internship</a
+            >
+            <a
+              href="#about"
+              onclick="showSection('about')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >About</a
+            >
+            <a
+              href="#contact"
+              onclick="showSection('contact')"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+              >Contact</a
+            >
+          </div>
+
+          <!-- Search Bar -->
+          <div class="hidden md:flex">
+            <div class="relative">
+              <input
+                type="text"
+                placeholder="Search courses..."
+                class="pl-10 pr-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              />
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Dark Mode Toggle -->
+          <button
+            onclick="toggleDarkMode()"
+            class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <i class="fas fa-moon text-gray-600 dark:text-gray-400 dark:hidden"></i>
+            <i class="fas fa-sun text-yellow-500 hidden dark:block"></i>
+          </button>
+
+          <!-- Mobile Menu Button -->
+          <button
+            onclick="toggleSidebar()"
+            class="md:hidden text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Homepage Section -->
+      <section id="home" class="page-section">
+        <!-- Hero Section -->
+        <div class="hero-gradient py-20">
+          <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+              Everyone have rights<br />
+              <span class="text-blue-600 mt-4 block">to contribute</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              Join thousands of students in mastering programming, web
+              development, and cutting-edge technologies with our comprehensive
+              courses and hands-on projects.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onclick="showSection('tutorials')"
+                class="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                <i class="fas fa-play mr-2"></i>Start Learning
+              </button>
+              <button
+                onclick="showSection('projects')"
+                class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <i class="fas fa-code mr-2"></i>Browse Projects
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Slider -->
+        <div class="container mx-auto px-4 py-16">
+          <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+            Featured Courses
+          </h2>
+          <div class="slider overflow-x-auto">
+            <div class="flex space-x-6 pb-4">
+              <div
+                class="min-w-80 bg-white rounded-xl shadow-lg p-6 card-hover"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg mb-4 flex items-center justify-center"
+                >
+                  <i class="fab fa-java text-white text-5xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">
+                  Complete Java Bootcamp
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Master Java from basics to advanced concepts
+                </p>
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-600 font-semibold"
+                    >4.8 ⭐ (2.1k students)</span
+                  >
+                  <button
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Enroll Now
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="min-w-80 bg-white rounded-xl shadow-lg p-6 card-hover"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg mb-4 flex items-center justify-center"
+                >
+                  <i class="fab fa-python text-white text-5xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Python for Beginners</h3>
+                <p class="text-gray-600 mb-4">
+                  Start your programming journey with Python's simple syntax.
+                </p>
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-600 font-semibold"
+                    >4.9 ⭐ (3.2k students)</span
+                  >
+                  <button
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Enroll Now
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="min-w-80 bg-white rounded-xl shadow-lg p-6 card-hover"
+              >
+                <div
+                  class="w-full h-48 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg mb-4 flex items-center justify-center"
+                >
+                  <i class="fab fa-react text-white text-5xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">React Development</h3>
+                <p class="text-gray-600 mb-4">
+                  Build modern web applications with React and its ecosystem.
+                </p>
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-600 font-semibold"
+                    >4.7 ⭐ (1.8k students)</span
+                  >
+                  <button
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Enroll Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- University Partners -->
+        <div class="bg-white py-16">
+          <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">
+              Trusted by 10+ Universities
+            </h2>
+            <div
+              class="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60"
+            >
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">MIT</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Stanford</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Harvard</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Berkeley</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">CMU</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Georgia Tech</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Caltech</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Princeton</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Columbia</p>
+              </div>
+              <div class="text-center">
+                <div
+                  class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center"
+                >
+                  <i class="fas fa-university text-2xl text-gray-600"></i>
+                </div>
+                <p class="text-sm font-medium">Yale</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="container mx-auto px-4 py-16">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+              <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
+              <h3 class="text-3xl font-bold text-gray-800 mb-2">50K+</h3>
+              <p class="text-gray-600">Active Students</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+              <i class="fas fa-book text-4xl text-green-600 mb-4"></i>
+              <h3 class="text-3xl font-bold text-gray-800 mb-2">200+</h3>
+              <p class="text-gray-600">Courses Available</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+              <i class="fas fa-code text-4xl text-purple-600 mb-4"></i>
+              <h3 class="text-3xl font-bold text-gray-800 mb-2">1000+</h3>
+              <p class="text-gray-600">Projects Completed</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-8 card-hover">
+              <i class="fas fa-star text-4xl text-yellow-500 mb-4"></i>
+              <h3 class="text-3xl font-bold text-gray-800 mb-2">4.9</h3>
+              <p class="text-gray-600">Average Rating</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mission Statement -->
+        <div class="bg-white py-16">
+          <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-8 text-gray-800">Our Mission</h2>
+            <p class="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              At MITS, we believe in empowering students with practical,
+              industry-relevant skills that prepare them for successful careers
+              in technology. Our comprehensive programs combine theoretical
+              knowledge with hands-on experience, mentorship, and real-world
+              projects to bridge the gap between education and industry demands.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tutorials Section -->
+      <section id="tutorials" class="page-section hidden">
+        <div class="container mx-auto px-4 py-16">
+          <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Tutorials</h1>
+            <p class="text-xl text-gray-600">
+              Master programming languages and technologies with our
+              step-by-step guides
+            </p>
+          </div>
+
+          <!-- Filters -->
+          <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-wrap gap-4 items-center">
+              <span class="font-semibold text-gray-700">Filter by:</span>
+              <select
+                class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option>All Topics</option>
+                <option>Java</option>
+                <option>Python</option>
+                <option>JavaScript</option>
+                <option>React</option>
+                <option>Node.js</option>
+              </select>
+              <select
+                class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option>All Levels</option>
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Progress Tracker -->
+          <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">
+              Your Learning Progress
+            </h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-gray-700">Java Fundamentals</span>
+                  <span class="text-blue-600 font-semibold">75%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="progress-bar h-2 rounded-full"
+                    style="width: 75%"
+                  ></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-2">
+                  <span class="text-gray-700">Python Basics</span>
+                  <span class="text-blue-600 font-semibold">45%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="progress-bar h-2 rounded-full"
+                    style="width: 45%"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tutorial Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden h-full card-hover">
+              <div class="relative">
+                <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                  <i class="fab fa-java text-white text-6xl"></i>
+                </div>
+                <span class="absolute top-4 right-4 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                  Beginner
+                </span>
+              </div>
+              <div class="p-6 flex flex-col h-[calc(100%-12rem)]">
+                <h3 class="text-xl font-semibold mb-2">Java Programming Fundamentals</h3>
+                <p class="text-gray-600 mb-4 flex-grow">Learn the basics of Java programming including variables, loops, and object-oriented concepts.</p>
+                <div class="mt-auto">
+                  <div class="flex justify-between items-center mb-4">
+                    <span class="text-blue-600 font-semibold">4.8 ⭐ (2.1k students)</span>
+                  </div>
+                  <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Enroll Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden h-full card-hover">
+              <div class="relative">
+                <div class="h-48 bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center">
+                  <i class="fab fa-python text-white text-6xl"></i>
+                </div>
+                <span class="absolute top-4 right-4 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                  Beginner
+                </span>
+              </div>
+              <div class="p-6 flex flex-col h-[calc(100%-12rem)]">
+                <h3 class="text-xl font-semibold mb-2">Python for Beginners</h3>
+                <p class="text-gray-600 mb-4 flex-grow">Start your programming journey with Python's simple syntax and powerful libraries.</p>
+                <div class="mt-auto">
+                  <div class="flex justify-between items-center mb-4">
+                    <span class="text-blue-600 font-semibold">4.9 ⭐ (3.2k students)</span>
+                  </div>
+                  <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Enroll Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+              <div
+                class="h-48 bg-gradient-to-r from-yellow-500 to-orange-600 flex items-center justify-center"
+              >
+                <i class="fab fa-js text-white text-6xl"></i>
+              </div>
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span
+                    class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium"
+                    >Intermediate</span
+                  >
+                  <span class="text-gray-500 text-sm">15 lessons</span>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">
+                  JavaScript Essentials
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Master JavaScript to create dynamic and interactive web
+                  applications.
+                </p>
+                <button
+                  class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Start Tutorial
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="bg-white rounded-xl shadow-lg overflow-hidden card-hover"
+            >
+              <div
+                class="h-48 bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center"
+              >
+                <i class="fab fa-react text-white text-6xl"></i>
+              </div>
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span
+                    class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium"
+                    >Advanced</span
+                  >
+                  <span class="text-gray-500 text-sm">20 lessons</span>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">
+                  React Development
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Build modern, responsive web applications using React and its
+                  ecosystem.
+                </p>
+                <button
+                  class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Start Tutorial
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="bg-white rounded-xl shadow-lg overflow-hidden card-hover"
+            >
+              <div
+                class="h-48 bg-gradient-to-r from-green-600 to-green-800 flex items-center justify-center"
+              >
+                <i class="fab fa-node-js text-white text-6xl"></i>
+              </div>
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span
+                    class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium"
+                    >Intermediate</span
+                  >
+                  <span class="text-gray-500 text-sm">18 lessons</span>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">
+                  Node.js Backend Development
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Create powerful server-side applications with Node.js and
+                  Express.
+                </p>
+                <button
+                  class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Start Tutorial
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="bg-white rounded-xl shadow-lg overflow-hidden card-hover"
+            >
+              <div
+                class="h-48 bg-gradient-to-r from-red-500 to-pink-600 flex items-center justify-center"
+              >
+                <i class="fas fa-database text-white text-6xl"></i>
+              </div>
+              <div class="p-6">
+                <div class="flex items-center justify-between mb-2">
+                  <span
+                    class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium"
+                    >Intermediate</span
+                  >
+                  <span class="text-gray-500 text-sm">14 lessons</span>
+                </div>
+                <h3 class="text-xl font-semibold mb-2 text-gray-800">
+                  Database Management
+                </h3>
+                <p class="text-gray-600 mb-4">
+                  Learn SQL and database design principles for efficient data
+                  management.
+                </p>
+                <button
+                  class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Start Tutorial
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Editor Preview -->
+          <div class="mt-16 bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gray-800 px-6 py-3 flex items-center">
+              <div class="flex space-x-2">
+                <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div class="w-3 h-3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects Section -->
+      <section id="projects" class="page-section hidden bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12 fade-in">
+            <span class="text-blue-600 text-sm font-semibold tracking-wide uppercase">Our Projects</span>
+            <h1 class="text-4xl font-bold text-gray-800 mt-2 mb-4">Explore Our Project Collection</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Dive into our carefully curated collection of hands-on projects designed to help you master various technologies and build your portfolio.</p>
+          </div>
+
+          <!-- Project Filters -->
+          <div class="flex flex-wrap justify-center gap-4 mb-8 slide-up">
+            <button onclick="filterProjects('all')" class="filter-button active px-6 py-2 rounded-lg border-2 border-blue-600">
+              All Projects
+            </button>
+            <button onclick="filterProjects('beginner')" class="filter-button px-6 py-2 rounded-lg border-2 border-blue-600">
+              Beginner
+            </button>
+            <button onclick="filterProjects('intermediate')" class="filter-button px-6 py-2 rounded-lg border-2 border-blue-600">
+              Intermediate
+            </button>
+            <button onclick="filterProjects('advanced')" class="filter-button px-6 py-2 rounded-lg border-2 border-blue-600">
+              Advanced
+            </button>
+          </div>
+
+          <!-- Project Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Project Card 1 -->
+            <div class="project-card scale-in" data-level="beginner">
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="relative">
+                  <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-tasks text-white text-5xl"></i>
+                  </div>
+                  <span class="absolute top-4 right-4 bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                    Beginner
+                  </span>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-semibold mb-2">Todo List Application</h3>
+                  <p class="text-gray-600 mb-4">Build a simple todo list with HTML, CSS, and JavaScript. Learn the basics of DOM manipulation and local storage.</p>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="far fa-clock mr-2"></i>
+                      Duration: 2-3 hours
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-code mr-2"></i>
+                      Technologies: HTML, CSS, JavaScript
+                    </div>
+                    <button onclick="showProjectDetails('todo-app')" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Project Card 2 -->
+            <div class="project-card scale-in" data-level="intermediate">
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="relative">
+                  <div class="h-48 bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center">
+                    <i class="fas fa-cloud-sun text-white text-5xl"></i>
+                  </div>
+                  <span class="absolute top-4 right-4 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
+                    Intermediate
+                  </span>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-semibold mb-2">Weather Dashboard</h3>
+                  <p class="text-gray-600 mb-4">Create a weather dashboard using OpenWeather API. Implement geolocation and dynamic weather updates.</p>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="far fa-clock mr-2"></i>
+                      Duration: 4-5 hours
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-code mr-2"></i>
+                      Technologies: React, API Integration
+                    </div>
+                    <button onclick="showProjectDetails('weather-app')" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Project Card 3 -->
+            <div class="project-card scale-in" data-level="advanced">
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="relative">
+                  <div class="h-48 bg-gradient-to-r from-red-500 to-pink-600 flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-white text-5xl"></i>
+                  </div>
+                  <span class="absolute top-4 right-4 bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-medium">
+                    Advanced
+                  </span>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-semibold mb-2">E-commerce Platform</h3>
+                  <p class="text-gray-600 mb-4">Build a full-stack e-commerce platform with user authentication, product management, and payment integration.</p>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="far fa-clock mr-2"></i>
+                      Duration: 15-20 hours
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-code mr-2"></i>
+                      Technologies: MERN Stack, Stripe
+                    </div>
+                    <button onclick="showProjectDetails('ecommerce')" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Detail Modal -->
+          <div id="project-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="container mx-auto px-4 h-full flex items-center justify-center">
+              <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                  <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800" id="project-title">Project Title</h2>
+                    <button onclick="closeProjectDetail()" class="text-gray-500 hover:text-gray-700">
+                      <i class="fas fa-times text-xl"></i>
+                    </button>
+                  </div>
+                  
+                  <div class="space-y-8">
+                    <!-- Project Overview -->
+                    <div class="prose max-w-none">
+                      <h3 class="text-xl font-semibold text-gray-800">Overview</h3>
+                      <p id="project-description" class="text-gray-600">Project description goes here...</p>
+                      
+                      <div class="flex flex-wrap gap-4 my-4">
+                        <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                          <i class="far fa-clock mr-2 text-blue-600"></i>
+                          <span id="project-duration" class="text-sm">Duration: 4-5 hours</span>
+                        </div>
+                        <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                          <i class="fas fa-code mr-2 text-blue-600"></i>
+                          <span id="project-tech" class="text-sm">Technologies Used</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="prose max-w-none">
+                      <h3 class="text-xl font-semibold text-gray-800">Instructions</h3>
+                      <div class="bg-gray-50 rounded-lg p-6">
+                        <ol class="list-decimal list-inside space-y-4" id="project-instructions">
+                          <li>Set up your development environment</li>
+                          <li>Initialize your project</li>
+                          <li>Follow the step-by-step guide</li>
+                          <li>Test your implementation</li>
+                          <li>Deploy your project</li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    <!-- Code Sample -->
+                    <div class="prose max-w-none">
+                      <h3 class="text-xl font-semibold text-gray-800">Code Sample</h3>
+                      <div class="bg-gray-900 rounded-lg p-6 overflow-x-auto">
+                        <pre><code class="language-javascript text-gray-300" id="project-code">
+// Sample code will be loaded here
+                        </code></pre>
+                      </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-wrap gap-4 items-center justify-between">
+                      <div class="flex gap-4">
+                        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                          <i class="fas fa-play mr-2"></i>
+                          Try Online
+                        </button>
+                        <button class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors flex items-center">
+                          <i class="fas fa-download mr-2"></i>
+                          Download
+                        </button>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <div class="flex">
+                          <i class="fas fa-star text-yellow-400"></i>
+                          <i class="fas fa-star text-yellow-400"></i>
+                          <i class="fas fa-star text-yellow-400"></i>
+                          <i class="fas fa-star text-yellow-400"></i>
+                          <i class="far fa-star text-yellow-400"></i>
+                        </div>
+                        <span class="text-gray-600">(4.0)</span>
+                      </div>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="border-t pt-8">
+                      <h3 class="text-xl font-semibold mb-6">Comments</h3>
+                      
+                      <!-- Comment Form -->
+                      <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                        <div class="flex gap-4">
+                          <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                              <span class="text-white font-semibold">JD</span>
+                            </div>
+                          </div>
+                          <div class="flex-grow">
+                            <textarea 
+                              placeholder="Share your thoughts..." 
+                              class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                              rows="3"
+                            ></textarea>
+                            <div class="flex items-center justify-between mt-3">
+                              <div class="flex items-center">
+                                <div class="flex">
+                                  <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="far fa-star"></i>
+                                  </button>
+                                  <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="far fa-star"></i>
+                                  </button>
+                                  <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="far fa-star"></i>
+                                  </button>
+                                  <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="far fa-star"></i>
+                                  </button>
+                                  <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="far fa-star"></i>
+                                  </button>
+                                </div>
+                                <span class="text-sm text-gray-500 ml-2">Rate this project</span>
+                              </div>
+                              <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Post Comment
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Comments List -->
+                      <div class="space-y-6" id="comments-list">
+                        <!-- Sample Comment -->
+                        <div class="flex gap-4">
+                          <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                              <span class="text-gray-600 font-semibold">AS</span>
+                            </div>
+                          </div>
+                          <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                              <h4 class="font-semibold">Alex Smith</h4>
+                              <span class="text-sm text-gray-500">2 days ago</span>
+                            </div>
+                            <div class="flex items-center mt-1 mb-2">
+                              <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star text-yellow-400"></i>
+                              </div>
+                              <span class="text-sm text-gray-500 ml-2">4.0</span>
+                            </div>
+                            <p class="text-gray-600">Great project! The instructions were clear and I learned a lot. Looking forward to more projects like this.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="page-section hidden bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12 fade-in">
+            <span class="text-blue-600 text-sm font-semibold tracking-wide uppercase">About Us</span>
+            <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mt-4 mb-6">Who We Are</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Empowering the next generation of tech innovators through quality education and hands-on experience.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <!-- About Content -->
+            <div class="space-y-6 slide-up">
+              <div class="prose max-w-none">
+                <p class="text-lg text-gray-600 leading-relaxed">
+                  At Micro Information Technology Services (MITS), we believe in the power of practical learning and hands-on experience. Founded in 2020, our mission is to bridge the gap between traditional education and industry requirements by providing comprehensive, project-based learning experiences.
+                </p>
+                <p class="text-lg text-gray-600 leading-relaxed mt-4">
+                  Our team consists of industry experts, experienced developers, and passionate educators who are committed to helping students and professionals master the latest technologies and best practices in software development.
+                </p>
+                <p class="text-lg text-gray-600 leading-relaxed mt-4">
+                  We specialize in:
+                </p>
+                <ul class="space-y-3 text-gray-600">
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    Hands-on Project-Based Learning
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    Industry-Relevant Curriculum
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    One-on-One Mentorship
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    Real-World Project Experience
+                  </li>
+                </ul>
+              </div>
+
+              <div class="flex gap-4">
+                <button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                  <i class="fas fa-users mr-2"></i>
+                  Join Our Community
+                </button>
+                <button class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors flex items-center">
+                  <i class="fas fa-paper-plane mr-2"></i>
+                  Contact Us
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 gap-6">
+              <div class="bg-white rounded-xl shadow-lg p-6 scale-in">
+                <div class="text-4xl font-bold text-blue-600 mb-2">5000+</div>
+                <div class="text-gray-600">Students Trained</div>
+              </div>
+              <div class="bg-white rounded-xl shadow-lg p-6 scale-in">
+                <div class="text-4xl font-bold text-green-600 mb-2">200+</div>
+                <div class="text-gray-600">Projects Completed</div>
+              </div>
+              <div class="bg-white rounded-xl shadow-lg p-6 scale-in">
+                <div class="text-4xl font-bold text-purple-600 mb-2">50+</div>
+                <div class="text-gray-600">Expert Mentors</div>
+              </div>
+              <div class="bg-white rounded-xl shadow-lg p-6 scale-in">
+                <div class="text-4xl font-bold text-orange-600 mb-2">95%</div>
+                <div class="text-gray-600">Success Rate</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Team Section -->
+          <div class="mt-20">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-bold text-gray-800">Meet Our Team</h2>
+              <p class="text-gray-600 mt-2">The passionate people behind our success</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <!-- Team Member 1 -->
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden scale-in">
+                <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                <div class="p-6 text-center">
+                  <h3 class="text-xl font-semibold text-gray-800">John Doe</h3>
+                  <p class="text-gray-600 mt-1">Founder & Lead Instructor</p>
+                  <div class="flex justify-center space-x-4 mt-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-github"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Team Member 2 -->
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden scale-in">
+                <div class="h-48 bg-gradient-to-r from-green-500 to-blue-600"></div>
+                <div class="p-6 text-center">
+                  <h3 class="text-xl font-semibold text-gray-800">Jane Smith</h3>
+                  <p class="text-gray-600 mt-1">Senior Developer & Mentor</p>
+                  <div class="flex justify-center space-x-4 mt-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-github"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Team Member 3 -->
+              <div class="bg-white rounded-xl shadow-lg overflow-hidden scale-in">
+                <div class="h-48 bg-gradient-to-r from-yellow-500 to-red-600"></div>
+                <div class="p-6 text-center">
+                  <h3 class="text-xl font-semibold text-gray-800">Mike Johnson</h3>
+                  <p class="text-gray-600 mt-1">Technical Lead & Instructor</p>
+                  <div class="flex justify-center space-x-4 mt-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600"><i class="fab fa-github"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact" class="page-section hidden bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+          <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Contact Us</h1>
+            <p class="text-xl text-gray-600">Get in touch with our team</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Contact Form -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+              <form class="space-y-6">
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Name</label>
+                  <input type="text" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your name">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Email</label>
+                  <input type="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="your@email.com">
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Message</label>
+                  <textarea class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 h-32" placeholder="Your message"></textarea>
+                </div>
+                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                  Send Message
+                </button>
+              </form>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="space-y-8">
+              <div class="bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-xl font-semibold mb-4">Our Location</h3>
+                <!-- Google Maps Placeholder -->
+                <div class="w-full h-64 bg-gray-200 rounded-lg mb-4"></div>
+                <div class="space-y-4">
+                  <div class="flex items-start space-x-4">
+                    <i class="fas fa-map-marker-alt text-blue-600 mt-1"></i>
+                    <div>
+                      <h4 class="font-medium">Address</h4>
+                      <p class="text-gray-600">123 Tech Street, Silicon Valley, CA 94025</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-4">
+                    <i class="fas fa-phone text-blue-600 mt-1"></i>
+                    <div>
+                      <h4 class="font-medium">Phone</h4>
+                      <p class="text-gray-600">+1 (555) 123-4567</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-4">
+                    <i class="fas fa-envelope text-blue-600 mt-1"></i>
+                    <div>
+                      <h4 class="font-medium">Email</h4>
+                      <p class="text-gray-600">contact@mits.com</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Social Media Links -->
+              <div class="bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-xl font-semibold mb-4">Connect With Us</h3>
+                <div class="flex space-x-4">
+                  <a href="#" class="text-gray-600 hover:text-blue-600 text-2xl"><i class="fab fa-facebook"></i></a>
+                  <a href="#" class="text-gray-600 hover:text-blue-600 text-2xl"><i class="fab fa-twitter"></i></a>
+                  <a href="#" class="text-gray-600 hover:text-blue-600 text-2xl"><i class="fab fa-linkedin"></i></a>
+                  <a href="#" class="text-gray-600 hover:text-blue-600 text-2xl"><i class="fab fa-instagram"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Internship Section -->
+      <section id="internship" class="page-section hidden bg-gray-50 py-16">
+        <div class="container mx-auto px-4">
+          <!-- Header -->
+          <div class="text-center mb-12 fade-in">
+            <span class="text-blue-600 text-sm font-semibold tracking-wide uppercase">Internship Program</span>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mt-2 mb-4">Explore Internship Opportunities</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Gain hands-on experience, grow with mentors, and build your career with MITS.</p>
+          </div>
+
+          <!-- Program Highlights -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <!-- Domain Card 1 -->
+            <div class="domain-card rounded-xl p-6 text-white">
+              <div class="text-3xl mb-4"><i class="fas fa-code"></i></div>
+              <h3 class="text-xl font-semibold mb-2">Web Development</h3>
+              <p class="text-sm opacity-90">Frontend, Backend, Full Stack</p>
+              <div class="mt-4 text-sm">
+                <p>Duration: 4-12 weeks</p>
+                <p>Eligibility: BTech/MCA</p>
+              </div>
+            </div>
+
+            <!-- Domain Card 2 -->
+            <div class="domain-card rounded-xl p-6 text-white" style="background: linear-gradient(135deg, #34d399 0%, #059669 100%)">
+              <div class="text-3xl mb-4"><i class="fas fa-brain"></i></div>
+              <h3 class="text-xl font-semibold mb-2">AI & ML</h3>
+              <p class="text-sm opacity-90">Machine Learning, Deep Learning</p>
+              <div class="mt-4 text-sm">
+                <p>Duration: 8-12 weeks</p>
+                <p>Eligibility: BTech/MTech</p>
+              </div>
+            </div>
+
+            <!-- Domain Card 3 -->
+            <div class="domain-card rounded-xl p-6 text-white" style="background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)">
+              <div class="text-3xl mb-4"><i class="fas fa-database"></i></div>
+              <h3 class="text-xl font-semibold mb-2">Data Science</h3>
+              <p class="text-sm opacity-90">Analytics, Visualization</p>
+              <div class="mt-4 text-sm">
+                <p>Duration: 6-12 weeks</p>
+                <p>Eligibility: Any Degree</p>
+              </div>
+            </div>
+
+            <!-- Domain Card 4 -->
+            <div class="domain-card rounded-xl p-6 text-white" style="background: linear-gradient(135deg, #f472b6 0%, #db2777 100%)">
+              <div class="text-3xl mb-4"><i class="fas fa-cloud"></i></div>
+              <h3 class="text-xl font-semibold mb-2">Cloud Computing</h3>
+              <p class="text-sm opacity-90">AWS, Azure, DevOps</p>
+              <div class="mt-4 text-sm">
+                <p>Duration: 6-12 weeks</p>
+                <p>Eligibility: BTech/MCA</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Form -->
+          <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Apply for Internship</h2>
+            <form class="space-y-6" id="internshipForm">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Full Name</label>
+                  <input type="text" class="form-input w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Email</label>
+                  <input type="email" class="form-input w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">College/University</label>
+                  <input type="text" class="form-input w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                </div>
+                <div>
+                  <label class="block text-gray-700 font-medium mb-2">Domain of Interest</label>
+                  <select class="form-input w-full border border-gray-300 rounded-lg px-4 py-2" required>
+                    <option value="">Select Domain</option>
+                    <option value="web">Web Development</option>
+                    <option value="ai">AI & ML</option>
+                    <option value="data">Data Science</option>
+                    <option value="cloud">Cloud Computing</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-gray-700 font-medium mb-2">Resume</label>
+                <div class="file-upload-area rounded-lg p-4 text-center cursor-pointer">
+                  <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                  <p class="text-gray-600">Drag & drop your resume or click to browse</p>
+                  <input type="file" class="hidden" accept=".pdf,.doc,.docx" required>
+                </div>
+              </div>
+              <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                Submit Application
+              </button>
+            </form>
+          </div>
+
+          <!-- Certificate Verification -->
+          <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Verify Your Certificate</h2>
+            <p class="text-gray-600 mb-6">Check the authenticity of your MITS internship certificate.</p>
+            <form class="flex gap-4">
+              <input type="text" placeholder="Enter Certificate ID" class="form-input flex-1 border border-gray-300 rounded-lg px-4 py-2">
+              <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors">
+                Verify
+              </button>
+            </form>
+            <div class="certificate-status hidden mt-4 p-4 rounded-lg"></div>
+          </div>
+
+          <!-- Why Choose MITS -->
+          <div class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Choose MITS?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div class="why-choose-card bg-white rounded-xl p-6 text-center">
+                <div class="text-3xl text-blue-600 mb-4"><i class="fas fa-project-diagram"></i></div>
+                <h3 class="text-lg font-semibold mb-2">Real Projects</h3>
+                <p class="text-gray-600">Work on real-world projects with industry experts</p>
+              </div>
+              <div class="why-choose-card bg-white rounded-xl p-6 text-center">
+                <div class="text-3xl text-green-600 mb-4"><i class="fas fa-laptop-house"></i></div>
+                <h3 class="text-lg font-semibold mb-2">Remote Friendly</h3>
+                <p class="text-gray-600">Flexible work environment with remote options</p>
+              </div>
+              <div class="why-choose-card bg-white rounded-xl p-6 text-center">
+                <div class="text-3xl text-purple-600 mb-4"><i class="fas fa-user-graduate"></i></div>
+                <h3 class="text-lg font-semibold mb-2">Mentorship</h3>
+                <p class="text-gray-600">One-on-one guidance from industry experts</p>
+              </div>
+              <div class="why-choose-card bg-white rounded-xl p-6 text-center">
+                <div class="text-3xl text-pink-600 mb-4"><i class="fas fa-certificate"></i></div>
+                <h3 class="text-lg font-semibold mb-2">Certification</h3>
+                <p class="text-gray-600">Industry-recognized certificates upon completion</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Join Team Banner -->
+          <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center">
+            <h2 class="text-3xl font-bold mb-4">Join Our Team</h2>
+            <p class="text-lg opacity-90 mb-6">Turn your internship into a full-time opportunity with MITS</p>
+            <a href="https://forms.gle/bxeaipVNM1xSsLzv5" target="_blank" class="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Apply Now
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Quick Links -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Quick Links</h3>
+              <ul class="space-y-2">
+                <li><a href="#home" class="hover:text-blue-400 transition-colors">Home</a></li>
+                <li><a href="#tutorials" class="hover:text-blue-400 transition-colors">Tutorials</a></li>
+                <li><a href="#projects" class="hover:text-blue-400 transition-colors">Projects</a></li>
+                <li><a href="#about" class="hover:text-blue-400 transition-colors">About</a></li>
+                <li><a href="#contact" class="hover:text-blue-400 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Newsletter</h3>
+              <p class="text-gray-400 mb-4">Stay updated with our latest tutorials and news</p>
+              <form class="flex">
+                <input type="email" placeholder="Your email" class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none text-gray-800">
+                <button class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors">Subscribe</button>
+              </form>
+            </div>
+
+            <!-- Social & Legal -->
+            <div>
+              <h3 class="text-xl font-semibold mb-4">Follow Us</h3>
+              <div class="flex space-x-4 mb-6">
+                <a href="#" class="hover:text-blue-400 transition-colors text-2xl"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-blue-400 transition-colors text-2xl"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-blue-400 transition-colors text-2xl"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="hover:text-blue-400 transition-colors text-2xl"><i class="fab fa-instagram"></i></a>
+              </div>
+              <div class="text-sm text-gray-400">
+                <p>&copy; 2024 MITS. All rights reserved.</p>
+                <p class="mt-2">
+                  <a href="#" class="hover:text-blue-400 transition-colors">Privacy Policy</a> |
+                  <a href="#" class="hover:text-blue-400 transition-colors">Terms of Service</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      // Project Details Functionality
+      function showProjectDetails(projectId) {
+        const modal = document.getElementById('project-detail-modal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Load project details based on projectId
+        loadProjectDetails(projectId);
+      }
+
+      function closeProjectDetail() {
+        const modal = document.getElementById('project-detail-modal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+
+      function loadProjectDetails(projectId) {
+        // This is a mock function - in a real application, you would fetch project details from a database
+        const projectDetails = {
+          'todo-app': {
+            title: 'Todo List Application',
+            description: 'A comprehensive todo list application with local storage, drag-and-drop functionality, and category management.',
+            duration: '2-3 hours',
+            technologies: 'HTML, CSS, JavaScript',
+            instructions: [
+              'Set up your development environment',
+              'Create the HTML structure',
+              'Style with CSS',
+              'Implement JavaScript functionality',
+              'Add local storage',
+              'Test and deploy'
+            ],
+            code: `// Todo List Implementation
+class TodoList {
+  constructor() {
+    this.todos = [];
+  }
+
+  addTodo(title) {
+    this.todos.push({
+      id: Date.now(),
+      title,
+      completed: false
+    });
+  }
+
+  toggleTodo(id) {
+    const todo = this.todos.find(t => t.id === id);
+    if (todo) {
+      todo.completed = !todo.completed;
+    }
+  }
+}
+`
+          },
+          // Add more project details here
+        };
+
+        const details = projectDetails[projectId];
+        if (details) {
+          document.getElementById('project-title').textContent = details.title;
+          document.getElementById('project-description').textContent = details.description;
+          document.getElementById('project-duration').textContent = `Duration: ${details.duration}`;
+          document.getElementById('project-tech').textContent = details.technologies;
+          
+          // Update instructions
+          const instructionsList = document.getElementById('project-instructions');
+          instructionsList.innerHTML = details.instructions
+            .map(instruction => `<li>${instruction}</li>`)
+            .join('');
+
+          // Update code sample
+          document.getElementById('project-code').textContent = details.code;
+        }
+      }
+
+      // Certificate Verification
+      document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const certificateId = this.querySelector('input').value;
+        const statusDiv = document.querySelector('.certificate-status');
+        
+        // Mock verification - replace with actual verification logic
+        if (certificateId.length === 8) {
+          statusDiv.classList.remove('hidden', 'invalid');
+          statusDiv.classList.add('valid');
+          statusDiv.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Certificate is valid';
+        } else {
+          statusDiv.classList.remove('hidden', 'valid');
+          statusDiv.classList.add('invalid');
+          statusDiv.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Invalid certificate ID';
+        }
+      });
+
+      // File Upload
+      const fileUpload = document.querySelector('.file-upload-area');
+      const fileInput = fileUpload.querySelector('input[type="file"]');
+
+      fileUpload.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+          const fileName = this.files[0].name;
+          fileUpload.querySelector('p').textContent = `Selected file: ${fileName}`;
+        }
+      });
+
+      // Drag and Drop
+      fileUpload.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        fileUpload.classList.add('border-blue-600');
+      });
+
+      fileUpload.addEventListener('dragleave', () => {
+        fileUpload.classList.remove('border-blue-600');
+      });
+
+      fileUpload.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileUpload.classList.remove('border-blue-600');
+        
+        if (e.dataTransfer.files.length > 0) {
+          fileInput.files = e.dataTransfer.files;
+          const fileName = e.dataTransfer.files[0].name;
+          fileUpload.querySelector('p').textContent = `Selected file: ${fileName}`;
+        }
+      });
+    </script>
+    <script>
+      // Dark Mode Functionality
+      function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        localStorage.setItem('darkMode', isDark);
+      }
+
+      // Initialize dark mode from localStorage
+      function initDarkMode() {
+        if (localStorage.getItem('darkMode') === 'true' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      }
+
+      // Sidebar Functionality
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (sidebar.classList.contains('translate-x-0')) {
+          sidebar.classList.remove('translate-x-0');
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        } else {
+          sidebar.classList.remove('-translate-x-full');
+          sidebar.classList.add('translate-x-0');
+          overlay.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      // Initialize dark mode on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        initDarkMode();
+        
+        // Initialize other functionality
+        const initialSection = window.location.hash.substring(1) || 'home';
+        showSection(initialSection);
+      });
+
+      // Close sidebar when window is resized to desktop view
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) { // md breakpoint
+          const sidebar = document.getElementById('sidebar');
+          const overlay = document.getElementById('sidebar-overlay');
+          sidebar.classList.remove('translate-x-0');
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        }
+      });
+    </script>
+  </body>
+</html>
