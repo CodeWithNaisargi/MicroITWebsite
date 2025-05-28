@@ -23,12 +23,12 @@ A modern, responsive website for Micro Information Technology Services, featurin
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/microit-website.git
+git clone https://github.com/CodeWithNaisargi/MicroITWebsite.git
 ```
 
 2. Open the project folder:
 ```bash
-cd microit-website
+cd MicroITWebsite
 ```
 
 3. Open `index.html` in your browser or use a local server:
@@ -60,9 +60,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Live Demo
 
-Visit the live website: [MITS Website](https://microit-website.vercel.app/)
+Visit the live website: [MITS Website](https://microitwebsite.vercel.app/)
 
 ## Contact
 
-Your Name - your.email@example.com
-Project Link: [https://github.com/yourusername/microit-website](https://github.com/yourusername/microit-website) 
+Naisargi - codewithNaisargi@gmail.com
+Project Link: [https://github.com/CodeWithNaisargi/MicroITWebsite](https://github.com/CodeWithNaisargi/MicroITWebsite) 
